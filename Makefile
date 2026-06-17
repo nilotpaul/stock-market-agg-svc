@@ -8,5 +8,8 @@ runclient:
 	@go build -o bin/$(APP_NAME)-client ./client
 	@bin/$(APP_NAME)-client
 
+init:
+	@go run ./server/script/main.go
+
 test:
 	@go test -v -count=1 ./...
