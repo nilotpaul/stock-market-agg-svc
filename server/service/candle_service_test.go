@@ -33,7 +33,7 @@ func TestCandleService_aggregateCandles(t *testing.T) {
 
 	got, err := svc.GetCandles(
 		t.Context(),
-		"TCS",
+		"TCS", // doesnt matter, all test data are for TCS
 		mustTime("2026-01-01 09:15:00"),
 		mustTime("2026-01-01 09:24:00"),
 		"5m",
@@ -44,14 +44,6 @@ func TestCandleService_aggregateCandles(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, got)
-}
-
-func mustTime(s string) time.Time {
-	t, err := time.Parse("2006-01-02 15:04:05", s)
-	if err != nil {
-		panic(err)
-	}
-	return t
 }
 
 type testCandleStore struct {
@@ -77,4 +69,12 @@ func (t *testCandleStore) GetCandles(
 	}
 
 	return candles, nil
+}
+
+func mustTime(s string) time.Time {
+	t, err := time.Parse(model.CandleDatetimeLayout, s)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }

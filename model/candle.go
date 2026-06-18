@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const CandleDatetimeLayout = "2006-01-02 15:04:05"
+
 type Candle struct {
 	Symbol   string    `json:"symbol"`
 	DateTime time.Time `json:"datetime"`
@@ -45,13 +47,13 @@ func (cr *GetCandlesRequest) ParseAndValidate(r *http.Request) error {
 		return fmt.Errorf("missing timeframe")
 	}
 
-	start, err := time.Parse("2006-01-02 15:04:05", q.Get("start_date"))
+	start, err := time.Parse(CandleDatetimeLayout, q.Get("start_date"))
 	if err != nil {
 		return fmt.Errorf("invalid start_date: %w", err)
 	}
 	cr.Start = start
 
-	end, err := time.Parse("2006-01-02 15:04:05", q.Get("end_date"))
+	end, err := time.Parse(CandleDatetimeLayout, q.Get("end_date"))
 	if err != nil {
 		return fmt.Errorf("invalid end_date: %w", err)
 	}

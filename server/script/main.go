@@ -11,6 +11,7 @@ import (
 
 	gocql "github.com/apache/cassandra-gocql-driver/v2"
 	"github.com/joho/godotenv"
+	"github.com/nilotpaul/stock-market-agg-svc/model"
 )
 
 const stockDataCSVPath = "data/stock_data.csv"
@@ -84,12 +85,12 @@ func seedDB(fr io.Reader, sess *gocql.Session) error {
 			return err
 		}
 
-		// parse time with csv data layout
-		dt, err := time.Parse("2006-01-02 15:04:05", record[FieldDatetime])
+		dt, err := time.Parse(model.CandleDatetimeLayout, record[FieldDatetime])
 		if err != nil {
 			return fmt.Errorf("invalid datetime %q: %w", record[FieldDatetime], err)
 		}
-		// convert from str to float
+
+		// conversions for string
 		open, err := strconv.ParseFloat(record[FieldOpen], 64)
 		if err != nil {
 			return err
@@ -135,8 +136,7 @@ func setupDB(sess *gocql.Session) error {
 		WITH replication = {
 			'class': 'SimpleStrategy',
 			'replication_factor': 1
-		}
-		`,
+		}`,
 		`
 		CREATE TABLE IF NOT EXISTS stock_keyspace.candles (
 			symbol text,
@@ -147,8 +147,7 @@ func setupDB(sess *gocql.Session) error {
 			close double,
 			volume bigint,
 			PRIMARY KEY ((symbol), datetime)
-		) WITH CLUSTERING ORDER BY (datetime ASC)
-		`,
+		) WITH CLUSTERING ORDER BY (datetime ASC)`,
 	}
 
 	for _, q := range queries {

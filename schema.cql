@@ -4,9 +4,7 @@ WITH replication = {
     'replication_factor': 1
 };
 
-USE stock_keyspace;
-
-CREATE TABLE IF NOT EXISTS candles (
+CREATE TABLE IF NOT EXISTS stock_keyspace.candles (
     symbol text,
     datetime timestamp,
     high double,
