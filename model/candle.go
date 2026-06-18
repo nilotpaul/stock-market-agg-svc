@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -17,10 +18,18 @@ type Candle struct {
 }
 
 type GetCandlesRequest struct {
-	Symbol    string
-	Timeframe string
-	Start     time.Time
-	End       time.Time
+	Symbol    string    `json:"symbol"`
+	Timeframe string    `json:"timeframe"`
+	Start     time.Time `json:"start_date"`
+	End       time.Time `json:"end_date"`
+	Limit     int       `json:"limit"`
+}
+
+type GetCandlesResponse struct {
+	Symbol    string    `json:"symbol"`
+	Timeframe string    `json:"timeframe"`
+	Candles   []*Candle `json:"candles"`
+	Count     int       `json:"count"`
 }
 
 func (cr *GetCandlesRequest) ParseAndValidate(r *http.Request) error {
@@ -50,6 +59,23 @@ func (cr *GetCandlesRequest) ParseAndValidate(r *http.Request) error {
 
 	if end.Before(start) {
 		return fmt.Errorf("end_date must be after start_date")
+	}
+
+	limitStr := q.Get("limit")
+	if len(limitStr) == 0 {
+		cr.Limit = 100
+	} else {
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			return fmt.Errorf("invalid limit")
+		}
+		if limit <= 0 {
+			return fmt.Errorf("limit must be greater than 0")
+		}
+		if limit > 1000 {
+			return fmt.Errorf("limit cannot exceed 1000")
+		}
+		cr.Limit = limit
 	}
 
 	return nil

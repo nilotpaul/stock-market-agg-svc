@@ -11,5 +11,12 @@ runclient:
 init:
 	@go run ./server/script/main.go
 
+cli:
+	go run ./client/main.go \
+    -symbol=TCS \
+    -start_date="2026-01-01 09:16:00" \
+    -end_date="2026-01-01 09:21:00" \
+    -timeframe=1m
+
 test:
 	@go test -v -count=1 ./...

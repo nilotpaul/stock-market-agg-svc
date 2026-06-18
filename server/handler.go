@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/nilotpaul/stock-market-agg-svc/server/model"
+	"github.com/nilotpaul/stock-market-agg-svc/model"
 	"github.com/nilotpaul/stock-market-agg-svc/server/service"
 )
 
@@ -30,7 +30,13 @@ func (h *CandleHandler) HandleGetCandles(w http.ResponseWriter, r *http.Request)
 	ctx, cancel := context.WithTimeout(r.Context(), time.Millisecond*300)
 	defer cancel()
 
-	candles, err := h.svc.GetCandles(ctx, req.Symbol, req.Start, req.End, req.Timeframe)
+	candles, err := h.svc.GetCandles(
+		ctx,
+		req.Symbol,
+		req.Start, req.End,
+		req.Timeframe,
+		req.Limit,
+	)
 	if err != nil {
 		if errors.Is(err, service.ErrUnsupportedTimeframe) {
 			return NewBadRequestError(err.Error(), req)
@@ -45,11 +51,11 @@ func (h *CandleHandler) HandleGetCandles(w http.ResponseWriter, r *http.Request)
 		return NewNotFoundError("candles data not found", nil)
 	}
 
-	return writeJSON(w, http.StatusOK, map[string]any{
-		"symbol":    req.Symbol,
-		"timeframe": req.Timeframe,
-		"candles":   candles,
-		"count":     len(candles),
+	return writeJSON(w, http.StatusOK, model.GetCandlesResponse{
+		Symbol:    req.Symbol,
+		Timeframe: req.Timeframe,
+		Candles:   candles,
+		Count:     len(candles),
 	})
 }
 

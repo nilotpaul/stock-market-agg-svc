@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nilotpaul/stock-market-agg-svc/server/model"
+	"github.com/nilotpaul/stock-market-agg-svc/model"
 	"github.com/nilotpaul/stock-market-agg-svc/server/repository"
 )
 
@@ -15,7 +15,7 @@ var (
 )
 
 type CandleService interface {
-	GetCandles(ctx context.Context, symbol string, start, end time.Time, tf string) ([]*model.Candle, error)
+	GetCandles(ctx context.Context, symbol string, start, end time.Time, tf string, limit int) ([]*model.Candle, error)
 }
 
 type candleService struct {
@@ -28,8 +28,8 @@ func NewCandleService(repo repository.CandleStorer) CandleService {
 	}
 }
 
-func (svc *candleService) GetCandles(ctx context.Context, symbol string, start, end time.Time, tf string) ([]*model.Candle, error) {
-	candles, err := svc.repo.GetCandles(ctx, symbol, start, end)
+func (svc *candleService) GetCandles(ctx context.Context, symbol string, start, end time.Time, tf string, limit int) ([]*model.Candle, error) {
+	candles, err := svc.repo.GetCandles(ctx, symbol, start, end, limit)
 	if err != nil {
 		return nil, err
 	}

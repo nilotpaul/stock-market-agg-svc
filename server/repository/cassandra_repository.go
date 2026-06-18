@@ -5,11 +5,11 @@ import (
 	"time"
 
 	gocql "github.com/apache/cassandra-gocql-driver/v2"
-	"github.com/nilotpaul/stock-market-agg-svc/server/model"
+	"github.com/nilotpaul/stock-market-agg-svc/model"
 )
 
 type CandleStorer interface {
-	GetCandles(ctx context.Context, symbol string, start time.Time, end time.Time) ([]*model.Candle, error)
+	GetCandles(ctx context.Context, symbol string, start time.Time, end time.Time, limit int) ([]*model.Candle, error)
 }
 
 type CassandraRepo struct {
@@ -22,7 +22,7 @@ func NewCassandra(sess *gocql.Session) *CassandraRepo {
 	}
 }
 
-func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, end time.Time) ([]*model.Candle, error) {
+func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, end time.Time, limit int) ([]*model.Candle, error) {
 	q := cr.session.Query(`
 		SELECT
 			symbol,
@@ -35,8 +35,9 @@ func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, e
 		FROM stock_keyspace.candles
 		WHERE symbol = ?
 		AND datetime >= ?
-		AND datetime <= ?`,
-		symbol, start, end)
+		AND datetime <= ?
+		LIMIT ?`,
+		symbol, start, end, limit)
 
 	var (
 		it = q.IterContext(ctx)
