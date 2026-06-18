@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -32,20 +30,8 @@ func main() {
 	}
 	defer sess.Close()
 
-	start, _ := time.Parse(
-		"2006-01-02 15:04:05",
-		"2026-01-01 09:16:00",
-	)
-	end, _ := time.Parse(
-		"2006-01-02 15:04:05",
-		"2026-01-01 09:15:00",
-	)
-
-	candles, err := GetCandles(sess, "TCS", start, end)
-	if err != nil {
-		log.Fatal(err)
+	s := NewAPIServer(listenAddr, sess)
+	if err := s.Start(); err != nil {
+		log.Println("api serve error:", err)
 	}
-
-	fmt.Printf("%+v\n", candles)
-	fmt.Println(len(candles))
 }
