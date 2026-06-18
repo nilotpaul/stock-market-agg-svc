@@ -14,6 +14,13 @@
 
 ### 1. Configure Environment
 
+If using docker:
+
+In project root run:
+```bash
+docker compose up -d
+```
+
 Update `.env`:
 
 ```env
@@ -89,4 +96,92 @@ or
 
 ```bash
 go test -v -count=1 ./...
+```
+
+## API Documentation
+
+### Health Check
+
+#### Request
+
+```http
+GET /api/v1/health
+```
+
+#### Example
+
+```bash
+curl -X GET http://localhost:3000/api/v1/health
+```
+
+#### Response
+
+```json
+"OK"
+```
+
+---
+
+### Get Candles
+
+Returns candle data for a symbol within a date range. Data can optionally be aggregated into larger timeframes.
+
+#### Request
+
+```http
+GET /api/v1/candles
+```
+
+#### Query Parameters
+
+| Parameter  | Type   | Required | Description                                             |
+| ---------- | ------ | -------- | ------------------------------------------------------- |
+| symbol     | string | Yes      | Stock symbol                                            |
+| timeframe  | string | Yes      | Candle timeframe (`1m`, `5m`, `15m`, `30m`, `1h`, `1d`) |
+| start_date | string | Yes      | Start datetime (`YYYY-MM-DD HH:mm:ss`)                  |
+| end_date   | string | Yes      | End datetime (`YYYY-MM-DD HH:mm:ss`)                    |
+| limit      | int    | No       | Maximum number of records returned (default: 100)       |
+
+#### Example
+
+```bash
+curl -X GET -G \
+  --data-urlencode "symbol=TCS" \
+  --data-urlencode "start_date=2026-01-01 09:15:00" \
+  --data-urlencode "end_date=2026-01-01 09:30:00" \
+  --data-urlencode "timeframe=5m" \
+  "http://localhost:3000/api/v1/candles"
+```
+
+#### Example Response
+
+```json
+{
+  "symbol": "TCS",
+  "timeframe": "5m",
+  "candles": [
+    {
+      "symbol": "TCS",
+      "datetime": "2026-01-01T09:15:00Z",
+      "open": 3215,
+      "high": 3225.3,
+      "low": 3208.3,
+      "close": 3223.3,
+      "volume": 156747
+    }
+  ],
+  "count": 1
+}
+```
+
+#### Error Response
+
+Can be of status 400, 404, 500.
+
+```json
+{
+  "status": 404,
+  "message": "candles data not found",
+  "data": null,
+}
 ```
