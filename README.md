@@ -185,3 +185,31 @@ Can be of status 400, 404, 500.
   "data": null,
 }
 ```
+
+## Assumptions & Notes
+
+- I’ve kept the implementation simple and mainly focused on the core requirements to keep things simpler for both me and the evaluator.
+- The `model` package was kept at the project root because I needed the types for both the server and CLI client. Otherwise, I would've kept it inside the server package.
+- For timeframe aggregation, I assumed I needed to convert the requested timeframe into minutes since the provided data was 1m.
+- I've skipped graceful shutdown handling for simplicity.
+- For pagination, I only implemented a `limit` query parameter for simplicity and time constraints. I understand that Cassandra's preferred pagination approach is to send the previous iterator paging state and use that to fetch the next batch of results.
+- For the HTTP layer, I intentionally did not use any libraries for simplicity and used a centralized error handling strategy, which is how I personally like to structure.
+- I couldn't implement the caching due to time constraints. My intended approach would be to create a `Cacher` interface and use:
+
+  ```
+  symbol + start_time + end_time + timeframe
+  ```
+
+  as the cache key and:
+
+  ```go
+  []*Candle
+  ```
+
+  as the cached value in an in memory store:
+
+  ```go
+  map[string][]*Candle
+  ```
+- In the CLI client, I did not use a context when calling the HTTP service because the API Service already has timeouts. For production, I would use `http.NewRequestWithContext`.
+- For logging and observability, I kept things basic and limited to request logging, error logging, and request duration measurements.

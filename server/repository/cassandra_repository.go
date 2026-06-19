@@ -40,22 +40,31 @@ func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, e
 		symbol, start, end, limit)
 
 	var (
-		it = q.IterContext(ctx)
-
+		it      = q.IterContext(ctx)
 		candles []*model.Candle
-		c       model.Candle
 	)
 
-	for it.Scan(
-		&c.Symbol,
-		&c.DateTime,
-		&c.Open,
-		&c.High,
-		&c.Low,
-		&c.Close,
-		&c.Volume,
-	) {
-		candles = append(candles, &c)
+	sc := it.Scanner()
+	for sc.Next() {
+		c := new(model.Candle)
+		err := sc.Scan(
+			&c.Symbol,
+			&c.DateTime,
+			&c.Open,
+			&c.High,
+			&c.Low,
+			&c.Close,
+			&c.Volume,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		candles = append(candles, c)
+	}
+
+	if err := sc.Err(); err != nil {
+		return nil, err
 	}
 
 	err := it.Close()

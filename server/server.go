@@ -22,6 +22,7 @@ func NewAPIServer(listenAddr string, sess *gocql.Session) *APIServer {
 }
 
 func (s *APIServer) Start() error {
+	http.Handle("/", http.FileServer(http.Dir("./web-client/dist")))
 	s.registerAPIRoutes()
 
 	fmt.Printf("started at %s\n", s.listenAddr)
