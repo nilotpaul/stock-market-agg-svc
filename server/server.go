@@ -26,6 +26,7 @@ func (s *APIServer) Start() error {
 	s.registerAPIRoutes()
 
 	fmt.Printf("started at %s\n", s.listenAddr)
+	fmt.Printf("vist http://localhost%s\n", s.listenAddr)
 	return http.ListenAndServe(s.listenAddr, nil)
 }
 
