@@ -26,7 +26,7 @@ func main() {
 
 	sess, err := OpenDBSession(dbHost, dbKeyspace)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("db error:", err)
 	}
 	defer sess.Close()
 

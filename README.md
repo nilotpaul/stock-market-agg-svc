@@ -56,6 +56,8 @@ or
 go run ./server
 ```
 
+Visit http://localhost:3000, this will serve both json api and web vue.js client. 
+
 ### 4. Test Using the CLI Client
 
 ```bash
