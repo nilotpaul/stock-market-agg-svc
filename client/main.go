@@ -36,6 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		var apiErr model.ApiError

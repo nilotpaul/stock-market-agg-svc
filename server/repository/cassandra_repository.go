@@ -43,6 +43,7 @@ func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, e
 		it      = q.IterContext(ctx)
 		candles []*model.Candle
 	)
+	defer it.Close()
 
 	sc := it.Scanner()
 	for sc.Next() {
@@ -67,6 +68,5 @@ func (cr *CassandraRepo) GetCandles(ctx context.Context, symbol string, start, e
 		return nil, err
 	}
 
-	err := it.Close()
-	return candles, err
+	return candles, nil
 }

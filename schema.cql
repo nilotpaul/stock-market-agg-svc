@@ -5,11 +5,12 @@ WITH replication = {
 };
 
 CREATE TABLE IF NOT EXISTS stock_keyspace.candles (
-    symbol text,
-    datetime timestamp,
-    high double,
-    low double,
-    close double,
-    volume bigint,
-    PRIMARY KEY ((symbol), datetime)
-) WITH CLUSTERING ORDER BY (datetime ASC);
+	symbol text,
+	datetime timestamp,
+	open double,
+	high double,
+	low double,
+	close double,
+	volume bigint,
+	PRIMARY KEY ((symbol), datetime)
+) WITH CLUSTERING ORDER BY (datetime ASC)
